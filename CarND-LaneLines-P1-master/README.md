@@ -7,13 +7,13 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/mask.ong "Mask"
+[image1]: ./examples/mask.png "Mask"
 
 ---
 
 ### Reflection
 
-###1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
+### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
 My pipeline consisted of 5 steps below.
  1. Convert the image to grayscale
@@ -32,11 +32,11 @@ In order to draw a single line on the left and right lanes, I modified the draw_
 If you'd like to include images to show how the pipeline works, here is how to include an image: 
 
 
-###2. Identify potential shortcomings with your current pipeline
+### 2. Identify potential shortcomings with your current pipeline
 
 One potential shortcoming would be, essentially, it is hyper-tuned with the test datasets. Hence we even don't know whether this hyperparameters will work well or not for new images (roads). For example, `min_line_length` may be affected by how much the road is curving.
 
-###3. Suggest possible improvements to your pipeline
+### 3. Suggest possible improvements to your pipeline
 
 One possible way to choose better hyperparameters. Hyperparameter search might be not essential, but is important for the _last one_ algorithm improvement. For searching, we can use some libraries like [hyperopt](https://github.com/hyperopt/hyperopt).
 
