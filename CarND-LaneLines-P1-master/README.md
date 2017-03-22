@@ -39,7 +39,8 @@ One potential shortcoming would be, essentially, it is hyper-tuned with the test
 
 One possible way to choose better hyperparameters. Hyperparameter search might be not essential, but is important for the _last one_ algorithm improvement. For searching, we can use some libraries like [hyperopt](https://github.com/hyperopt/hyperopt).
 
-Another possible improvement would be to make lines smooth among frames in video detection. This would be possible to have the detected line of past frames in memory.
+Another possible improvement would be to make lines smooth among frames in video detection. This would be possible by having the detected line of past frames in memory.
 
-Another potential improvement could be to use color information. Actually lane lines tend to be white or yellow in general. But converting images to grayscale might make the information less useful. If we use Convolutional Neural network, it will be improved.
+Another potential improvement could be to use color information. Actually lane lines tend to be white or yellow (not blue, green) in general. But converting images to grayscale might make the information less useful.
 
+The last one is improvement of the algorhithm itself. If we use Convolutional Neural network, the resutl will be improved (maybe as we will see later).
