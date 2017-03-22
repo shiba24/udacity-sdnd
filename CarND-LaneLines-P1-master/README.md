@@ -23,14 +23,13 @@ My pipeline consisted of 5 steps below.
  ![masking][image1]
  5. Combine egdes to lines using hough transform
 
-In order to draw a single line on the left and right lanes, I modified the draw_lines() function by two process.
+In order to draw a single line on the left and right lanes, I modified the draw_lines() function by three processes.
 
  1. Decide each line candidate is in which (right or left) part in the image
  2. Calculate average line for right lines and left lines, respectivelty
  3. Extend the two lines to the bottom of the image
 
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
-
+You can see all the results of applying the algorithms to test images [here](https://github.com/shiba24/udacity-sdnd/tree/master/CarND-LaneLines-P1-master/test_images).
 
 ### 2. Identify potential shortcomings with your current pipeline
 
