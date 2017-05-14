@@ -66,7 +66,7 @@ To augment the dataset, I used scaling up and down the images randomly. Here is 
 
 ![alt text][image4]
 
-When we decide a maximum coefficient to scaling, the function `scaling` set the actual value of scaling from `-1 * coef` to `coef`. The value larger than 0 means scaling up and the value smaller than 0 means scaling down. When scaling up the images, the scaled image will be cropped the center. Otherwise 
+When we decide a maximum coefficient to scaling, the function `scaling` set the actual value of scaling from `-1 * coef` to `coef`. The value larger than 0 means scaling up and the value smaller than 0 means scaling down. When scaling up the images, the scaled image will be cropped the center. Otherwise the image will be padded with zero.
 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
@@ -117,8 +117,7 @@ If a well known architecture was chosen:
 
 Here are five German traffic signs that I found on the web:
 
-![alt text][image4] ![alt text][image5] ![alt text][image6] 
-![alt text][image7] ![alt text][image8]
+
 
 The first image might be difficult to classify because ...
 
