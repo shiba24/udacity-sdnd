@@ -76,20 +76,34 @@ My final model consisted of the following layers:
 | Layer                 |     Description                               | 
 |:---------------------:|:---------------------------------------------:| 
 | Input                 | 32x32x3 RGB image                             | 
-| Convolution 3x3       | 1x1 stride, same padding, outputs 32x32x64    |
+| Convolution 5x5       | 1x1 stride, same padding, outputs 16x16x16    |
 | RELU                  |                                               |
-| Max pooling           | 2x2 stride,  outputs 16x16x64                 |
-| Convolution 3x3       | etc.                                          |
-| Fully connected       | etc.                                          |
-| Softmax               | etc.                                          |
-|                       |                                               |
-|                       |                                               |
+| Max pooling           | 2x2 stride,  outputs 14x14x16                 |
+| Convolution 5x5       | 1x1 stride, same padding, outputs 7x7x32      |
+| RELU                  |                                               |
+| Max pooling           | 2x2 stride,  outputs 5x5x16                   |
+| Convolution 3x3       | 1x1 stride, same padding, outputs 3x3x64      |
+| RELU                  |                                               |
+| Fully connected       | In: 576, Out: 256                             |
+| RELU                  |                                               |
+| Dropout               |                                               |
+| Fully connected       | In: 256, Out: 128                             |
+| RELU                  |                                               |
+| Fully connected       | In: 128, Out: 43                              |
+| Softmax               |                                               |
  
-
 
 ####3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-To train the model, I used an ....
+To train the model, I used Adam as optimizer. The loss function is cross entropy. All the parameters in training are as follows:
+
+```
+EPOCHS = 25
+BATCH_SIZE = 64
+SCALE = 0.15
+learning rate = 0.0004
+KEEP_PROB = 0.5
+```
 
 ####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
