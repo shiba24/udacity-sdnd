@@ -156,7 +156,7 @@ The code for making predictions on my final model is located from the 17th cell 
 
 | Probability           |     Prediction                                | 
 |:---------------------:|:---------------------------------------------:| 
-| 0.999995              | _Speed limit (70km/h)_                        | 
+| 0.999995              | __Speed limit (70km/h)__                      | 
 | 4.74793e-06           | Speed limit (20km/h)                          |
 | 4.50994e-09           | Speed limit (60km/h)                          |
 | 1.0691e-10            | Speed limit (120km/h)                         |
@@ -167,7 +167,7 @@ The code for making predictions on my final model is located from the 17th cell 
 | Probability           |     Prediction                                | 
 |:---------------------:|:---------------------------------------------:| 
 |  0.990586             | Roundabout mandatory                          | 
-|  0.00904871           | _Speed limit (100km/h)_                       |
+|  0.00904871           | __Speed limit (100km/h)__                     |
 |  0.000188292          | Slippery road                                 |
 |  9.07689e-05          | Vehicles over 3.5 metric tons prohibited      |
 |  4.72472e-05          | Dangerous curve to the left                   |
@@ -176,7 +176,7 @@ The code for making predictions on my final model is located from the 17th cell 
 
 | Probability           |     Prediction                                | 
 |:---------------------:|:---------------------------------------------:| 
-|  1.0                  | _Speed limit (30km/h)_                        | 
+|  1.0                  | __Speed limit (30km/h)__                      | 
 |  1.82738e-12          | Speed limit (50km/h)                          |
 |  2.80644e-15          | Speed limit (80km/h)                          |
 |  4.89327e-20          | Speed limit (20km/h)                          |
@@ -196,7 +196,7 @@ The code for making predictions on my final model is located from the 17th cell 
 
 | Probability           |     Prediction                                | 
 |:---------------------:|:---------------------------------------------:| 
-|   1.0                 | _Stop_                                        | 
+|   1.0                 | __Stop__                                      | 
 |  1.32871e-22          | No entry                                      |
 |   2.33511e-30         | Speed limit (60km/h)                          |
 |   1.33455e-32         | Bicycles crossing                             |
@@ -207,15 +207,12 @@ The code for making predictions on my final model is located from the 17th cell 
 
 | Probability           |     Prediction                                | 
 |:---------------------:|:---------------------------------------------:| 
-|  1.0                  | _Right-of-way at the next intersection_       | 
+|  1.0                  | __Right-of-way at the next intersection__     | 
 |  3.63465e-08          | Beware of ice/snow                            |
 |  2.79826e-14          | Pedestrians                                   |
 |  8.21564e-18          | Double curve                                  |
 |  2.541e-19            | Road work                                     |
 
 
-
-### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
-####1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
-
+We can see that in the case of correct prediction, the model has the large confidence (almost 1.0 probability). 
 
