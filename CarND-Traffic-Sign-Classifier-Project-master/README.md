@@ -112,9 +112,13 @@ I did an iterative approach:
 * What was the first architecture that was tried and why was it chosen?
 -- I chose AlexNet and improved it.
 * What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
+-- Less accurate.
+* How was the architecture adjusted and why was it adjusted?
+-- Adding dropout (critical), and adding one convolutional layer.
 * Which parameters were tuned? How were they adjusted and why?
+-- Learning rate and Scale value were tuned, because 1. decreasing learning rate almost always works well, 2. Scaking augmentation was only applied to training dataset, which means scaling value should not be too large.
 * What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+-- In this task, dropout was critical. Practically we can avoid overfitting by adding dropout layes. Of course, convolutional layers are good since the input data is images and pooling layers are also good since the task is classification.
 
 
 ### Test a Model on New Images
@@ -128,35 +132,88 @@ Here are six German traffic signs that I found on the web:
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
+The code for making predictions on my final model is located in the 14th cell of the Ipython notebook.
+
 Here are the results of the prediction:
 
 | Image                 |     Prediction                                | 
 |:---------------------:|:---------------------------------------------:| 
-| Stop Sign             | Stop sign                                     | 
-| U-turn                | U-turn                                        |
-| Yield                 | Yield                                         |
-| 100 km/h              | Bumpy Road                                    |
-| Slippery Road         | Slippery Road                                 |
+| Speed limit (70km/h)  | Speed limit (70km/h)                          | 
+| Speed limit (100km/h) | Roundabout mandatory                          |
+| Speed limit (30km/h)  | Speed limit (30km/h)                          |
+| No stopping           | Traffic signals                               |
+| Stop                  | Stop                                          |
+| Right of way          | Right of way                                  |
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess 4 of the 6 traffic signs, which gives an accuracy of 67%. This is a bit worse than the accuracy on the test set of 93.5%.
 
-####3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
+#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
+The code for making predictions on my final model is located from the 17th cell of the Ipython notebook.
 
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
+ - The top five soft max probabilities of Speed limit (70km/h)
 
 | Probability           |     Prediction                                | 
 |:---------------------:|:---------------------------------------------:| 
-| .60                   | Stop sign                                     | 
-| .20                   | U-turn                                        |
-| .05                   | Yield                                         |
-| .04                   | Bumpy Road                                    |
-| .01                   | Slippery Road                                 |
+| 0.999995              | _Speed limit (70km/h)_                        | 
+| 4.74793e-06           | Speed limit (20km/h)                          |
+| 4.50994e-09           | Speed limit (60km/h)                          |
+| 1.0691e-10            | Speed limit (120km/h)                         |
+| 6.74825e-12           | Ahead only                                    |
+
+ - The top five soft max probabilities of Speed limit (100km/h)
+
+| Probability           |     Prediction                                | 
+|:---------------------:|:---------------------------------------------:| 
+|  0.990586             | Roundabout mandatory                          | 
+|  0.00904871           | _Speed limit (100km/h)_                       |
+|  0.000188292          | Slippery road                                 |
+|  9.07689e-05          | Vehicles over 3.5 metric tons prohibited      |
+|  4.72472e-05          | Dangerous curve to the left                   |
+
+ - The top five soft max probabilities of Speed limit (30km/h)
+
+| Probability           |     Prediction                                | 
+|:---------------------:|:---------------------------------------------:| 
+|  1.0                  | _Speed limit (30km/h)_                        | 
+|  1.82738e-12          | Speed limit (50km/h)                          |
+|  2.80644e-15          | Speed limit (80km/h)                          |
+|  4.89327e-20          | Speed limit (20km/h)                          |
+|  6.01662e-23          | Stop                                          |
+
+ - The top five soft max probabilities of No stopping
+
+| Probability           |     Prediction                                | 
+|:---------------------:|:---------------------------------------------:| 
+|  0.801144             | Traffic signals                               | 
+|  0.0895388            | Keep right                                    |
+|  0.0500171            | Road work                                     |
+|  0.029327             | Priority road                                 |
+|  0.0176616            | Turn left ahead                               |
+
+ - The top five soft max probabilities of Stop
+
+| Probability           |     Prediction                                | 
+|:---------------------:|:---------------------------------------------:| 
+|   1.0                 | _Stop_                                        | 
+|  1.32871e-22          | No entry                                      |
+|   2.33511e-30         | Speed limit (60km/h)                          |
+|   1.33455e-32         | Bicycles crossing                             |
+|   1.35874e-34         | Speed limit (80km/h)                          |
 
 
-For the second image ... 
+ - The top five soft max probabilities of Right-of-way at the next intersection
+
+| Probability           |     Prediction                                | 
+|:---------------------:|:---------------------------------------------:| 
+|  1.0                  | _Right-of-way at the next intersection_       | 
+|  3.63465e-08          | Beware of ice/snow                            |
+|  2.79826e-14          | Pedestrians                                   |
+|  8.21564e-18          | Double curve                                  |
+|  2.541e-19            | Road work                                     |
+
+
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 ####1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
