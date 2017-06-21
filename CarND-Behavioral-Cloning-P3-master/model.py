@@ -14,15 +14,15 @@ from keras.layers import Conv2D, MaxPooling2D
 
 from keras.applications.vgg16 import VGG16
 
-DATA_DIR = '../data/behavioral-cloning-data/data'
+DATA_DIR = '../data/behavioral-cloning-data'
 
 
 def load_data():
     image_dir = os.path.join(DATA_DIR, 'IMG')
     log_csv = os.path.join(DATA_DIR, 'driving_log.csv')
-    log_df = pd.read_csv(log_csv, names=['center', 'left', 'right', 'steering', 'throttle', 'break', 'speed'])
+    log_df = pd.read_csv(log_csv) #, names=['center', 'left', 'right', 'steering', 'throttle', 'break', 'speed'])
 
-    X = np.array([cv2.imread(x) for x in log_df['center']], dtype=np.uint8)
+    X = np.array([cv2.imread(os.path.join(DATA_DIR, x)) for x in log_df['center']], dtype=np.uint8)
     y = log_df['steering'].as_matrix()
     return X, y
 
