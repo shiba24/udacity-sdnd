@@ -1,0 +1,16 @@
+
+*.zip
+.DS_STORE
+.*
+!.gitignore
+
+
+data/*
+!data/.gitkeep
+!data/GTSRB/.gitkeep
+*.meta
+*.index
+*checkpoint
+*.data-00000-of-00001
+
+*.mp4
