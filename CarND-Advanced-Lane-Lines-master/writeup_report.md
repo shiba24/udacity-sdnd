@@ -45,7 +45,7 @@ This is a result of camera calibration and undisgtortion on an test image picked
 
 Here I describe how to detect lane lines on single image, which will be easy to apply to the video ```project_video.mp4```
 
-First I show you the lane-detected image after the pipeline. This frame is the same one as the former one.
+Before explaining the pipeline in detail, I show you the lane-detected image after all the process of the pipeline. This frame is the same one as the former one.
 
 ![alt text][image2]
 
