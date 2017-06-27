@@ -144,10 +144,3 @@ def get_text_info(img, l_x, l_y, r_x, r_y, l_lane_pix, r_lane_pix):
 
 Here's a [link to my video result](./project_output.mp4)
 
----
-
-### Discussion
-
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
