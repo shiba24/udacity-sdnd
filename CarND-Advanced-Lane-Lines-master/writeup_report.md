@@ -16,10 +16,9 @@ The goals / steps of this project are the following:
 [image1]: ./output_images/calibration_undistortion.png "Undistorted"
 [image2]: ./output_images/pipeline_image.png "Road Transformed"
 [image3]: ./output_images/binary_image.png "Binary Example"
-[image4]: ./output_images/warped_perspective.png "Warp Example"
+[image4]: ./output_images/warp_perspective.png "Warp Example"
 [image5]: ./output_images/lane_pixels.png "Lane pixels"
 [image6]: ./output_images/polyfit.png "Polyfit lane line"
-[image6]: ./output_images/example_output.jpg "Output"
 [video1]: ./project_output.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
@@ -93,35 +92,35 @@ I verified that my perspective transform was working as expected by drawing the 
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-I detected lane lines by finding peaks in the image. After that, I fit my lane lines with a 2nd order polynomial. These are done from the 5th to 8th code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Advanced-Lane-Lines-master/script.ipynb).
+I detected lane lines by finding peaks in the image. These are done from the 5th to 8th code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Advanced-Lane-Lines-master/script.ipynb).
 
 ![alt text][image5]
+
+After that, I fit my lane lines with a 2nd order polynomial. 
 
 ![alt text][image6]
 
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+I did this in the 7th code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Advanced-Lane-Lines-master/script.ipynb).
 
 ```
-    #measuring curvanture
 def measuring_curv(l_x, l_y, r_x, r_y):
     l_max = 720
     r_max = 720
-    ym_per_pix = 30./720 # meters per pixel in y dimension
-    xm_per_pix = 3.7/700 # meteres per pixel in x dimension
+    ym_per_pix = 30./720           # meters per pixel in y dimension
+    xm_per_pix = 3.7/700           # meteres per pixel in x dimension
 
     left_fit_cr = np.polyfit(l_y * ym_per_pix, l_x * xm_per_pix, 2)
     right_fit_cr = np.polyfit(r_y * ym_per_pix, r_x * xm_per_pix, 2)
     left_curverad = ((1 + (2 * left_fit_cr[0] * l_max + left_fit_cr[1]) ** 2) ** 1.5) / np.absolute(2 * left_fit_cr[0])
     right_curverad = ((1 + (2 * right_fit_cr[0] * r_max + right_fit_cr[1]) ** 2) ** 1.5) / np.absolute(2 * right_fit_cr[0])
-    average_curv = (left_curverad + right_curverad)/2
+    average_curv = (left_curverad + right_curverad) / 2
     return average_curv
 
-    #adding necessary infomation on an image
 def get_text_info(img, l_x, l_y, r_x, r_y, l_lane_pix, r_lane_pix):
-    xm_per_pix = 3.7/700 # meteres per pixel in x dimension
+    xm_per_pix = 3.7/700             # meteres per pixel in x dimension
     screen_middel_pixel = img.shape[1] / 2
     car_middle_pixel = int((r_lane_pix + l_lane_pix)/2)
     screen_off_center = screen_middel_pixel - car_middle_pixel
@@ -133,9 +132,9 @@ def get_text_info(img, l_x, l_y, r_x, r_y, l_lane_pix, r_lane_pix):
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
 
-![alt text][image6]
+![alt text][image2]
+
 
 ---
 
