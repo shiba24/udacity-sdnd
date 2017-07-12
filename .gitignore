@@ -12,5 +12,4 @@ data/*
 *checkpoint
 *.data-00000-of-00001
 
-*.mp4
 *.h5
