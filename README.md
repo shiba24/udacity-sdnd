@@ -1,2 +1,4 @@
 # udacity-sdnd
-Self-driving nano degree
+
+My solutions of self-driving nano degree (Term 1) at Udacity.
+
