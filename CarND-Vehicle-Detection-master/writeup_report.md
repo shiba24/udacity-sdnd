@@ -10,13 +10,12 @@ The goals / steps of this project are the following:
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
-[image7]: ./examples/output_bboxes.png
+[image1]: ./output_images/car_notcar.png
+[image2]: ./output_images/car_feature.png
+[image3]: ./output_images/notcar_feature.png
+[image4]: ./output_images/sliding_windows.png
+[image5]: ./output_images/test_search.png
+[image6]: ./output_images/apply_heatmap.png
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -43,6 +42,8 @@ I tried various combinations of parameters and finally chose the parameters: usi
 
 ![alt text][image2]
 
+![alt text][image3]
+
 #### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
 Then I trained a linear SVM in the  code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Vehicle-Detection-master/script.ipynb). The accuracy for test dataset is .
@@ -54,13 +55,13 @@ Then I trained a linear SVM in the  code cell of the [IPython notebook](https://
 
 I decided to search 
 
-![alt text][image3]
+![alt text][image4]
 
 #### 2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
 Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
 
-![alt text][image4]
+![alt text][image5]
 ---
 
 ### Video Implementation
@@ -75,15 +76,9 @@ I recorded the positions of positive detections in each frame of the video.  Fro
 
 Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
 
-### Here are six frames and their corresponding heatmaps:
+### Here are six frames, their corresponding heatmaps and the resulting bounding boxes:
 
-![alt text][image5]
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
 ![alt text][image6]
-
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
 
 
 
