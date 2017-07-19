@@ -12,4 +12,5 @@ data/*
 *checkpoint
 *.data-00000-of-00001
 
+CarND-Behavioral-Cloning-P3-master/run*/*
 *.h5
