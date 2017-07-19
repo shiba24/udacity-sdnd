@@ -205,12 +205,14 @@ def define_model(input_shape, modelname='model.h5', gpu=-1):
         vgg16_model = VGG16(include_top=False, weights='imagenet', input_shape=input_shape)
         fc_model = Sequential()
         fc_model.add(Flatten(input_shape=vgg16_model.output_shape[1:]))
-        fc_model.add(Dense(512, activation=keras.layers.advanced_activations.ELU(alpha=1.0),
-                           kernel_initializer='he_normal'))
+        fc_model.add(Dense(512, kernel_initializer='he_normal'))
+        fc_model.add(keras.layers.advanced_activations.ELU(alpha=1.0))
         fc_model.add(BatchNormalization())
         fc_model.add(Dropout(0.5))
-        fc_model.add(Dense(128, activation=keras.layers.advanced_activations.ELU(alpha=1.0),
-                           kernel_initializer='he_normal'))
+        # fc_model.add(Dense(128, activation=keras.layers.advanced_activations.ELU(alpha=1.0),
+        #                    kernel_initializer='he_normal'))
+        fc_model.add(Dense(128, kernel_initializer='he_normal'))
+        fc_model.add(keras.layers.advanced_activations.ELU(alpha=1.0))
         fc_model.add(BatchNormalization())
         fc_model.add(Dropout(0.5))
         fc_model.add(Dense(32, activation='relu', kernel_initializer='he_normal'))
