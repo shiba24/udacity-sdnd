@@ -11,6 +11,8 @@ import copy
 
 import keras
 from keras.models import Sequential, Model
+from keras.callbacks import EarlyStopping, CSVLogger, ModelCheckpoint
+
 
 from keras.layers import Flatten, Dense, Dropout, Flatten, Lambda, Cropping2D, Input
 from keras.layers import Conv2D, MaxPooling2D
@@ -235,7 +237,12 @@ def training(BatchLoader, model, epochs, iter_per_epoch=None, modelname='model.h
     # model.fit_generator(BatchLoader, steps_per_epoch=ipe_train, epochs=epochs, 
     #                     validation_data=BatchLoaderTest, validation_steps=ipe_test)
 
-    model.fit_generator(BatchLoader, steps_per_epoch=BatchLoader.datasize_train / BatchLoader.batchsize, epochs=epochs, 
+
+    ckpt = ModelCheckpoint('weights.{epoch:02d}-{val_loss:.2f}.hdf5', monitor='val_loss', period=1)
+    csv_logger = CSVLogger('training.log')
+
+    model.fit_generator(BatchLoader, steps_per_epoch=BatchLoader.datasize_train / BatchLoader.batchsize,
+                        epochs=epochs, callbacks=[ckpt, csv_logger],
                         validation_data=BatchLoaderTest, validation_steps=BatchLoader.datasize_test / BatchLoader.batchsize)
 
     model.save(modelname)
