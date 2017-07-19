@@ -42,7 +42,7 @@ class MiniBatchLoader(object):
 
     def load_csv_path(self, img_path):
         if img_path[0] == '/':
-            return img_path
+            return os.path.join(DATA_DIR, img_path[63:])
         else:
             return os.path.join(DATA_DIR, img_path)
 
@@ -222,15 +222,22 @@ def define_model(input_shape, modelname='model.h5', gpu=-1):
     return model
 
 
-def training(BatchLoader, model, epochs, modelname='model.h5'):
+def training(BatchLoader, model, epochs, iter_per_epoch=None, modelname='model.h5'):
     BatchLoader.train = True
     BatchLoaderTest = copy.copy(BatchLoader)
     BatchLoaderTest.train = False
-    # model.fit_generator(BatchLoader, BatchLoader.datasize_train / BatchLoader.batchsize, epochs=epochs, 
-    #                     validation_data=BatchLoaderTest, validation_steps=BatchLoader.datasize_test / BatchLoader.batchsize)
+    # if iter_per_epoch is None:
+    #     ipe_train = BatchLoader.datasize_train / BatchLoader.batchsize
+    #     ipe_test = BatchLoader.datasize_test / BatchLoader.batchsize
+    # else:
+    #     ipe_train = iter_per_epoch
+    #     ipe_test = iter_per_epoch
+    # model.fit_generator(BatchLoader, steps_per_epoch=ipe_train, epochs=epochs, 
+    #                     validation_data=BatchLoaderTest, validation_steps=ipe_test)
 
-    model.fit_generator(BatchLoader, 20, epochs=epochs, 
-                        validation_data=BatchLoaderTest, validation_steps=10)
+    model.fit_generator(BatchLoader, steps_per_epoch=BatchLoader.datasize_train / BatchLoader.batchsize, epochs=epochs, 
+                        validation_data=BatchLoaderTest, validation_steps=BatchLoader.datasize_test / BatchLoader.batchsize)
+
     model.save(modelname)
 
 
@@ -238,11 +245,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU flag')
+    parser.add_argument('--ipe', '-i', default=None,
+                        help='Iteration per epoch (None = all)')
+    parser.add_argument('--epochs', '-e', type=int, default=10,
+                        help='Number of epochs')
     args = parser.parse_args()
 
     m = MiniBatchLoader(DATA_DIR, 32)
     model = define_model((80, 320, 3), gpu=args.gpu)
-    training(m, model, epochs=2, modelname='model.h5')
+    training(m, model, epochs=args.epochs, iter_per_epoch=args.ipe, modelname='model.h5')
 
 
 
