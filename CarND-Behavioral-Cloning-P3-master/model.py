@@ -9,6 +9,7 @@ import seaborn as sns
 import argparse
 import copy
 
+import keras
 from keras.models import Sequential, Model
 
 from keras.layers import Flatten, Dense, Dropout, Flatten, Lambda, Cropping2D, Input
@@ -18,6 +19,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.applications.vgg16 import VGG16
 
 DATA_DIR = '../data/behavioral-cloning-data'
+DELTA_ANGLE = 0.1
 
 class MiniBatchLoader(object):
     def __init__(self, data_dir, batchsize, insize=(100, 200), train=True):
@@ -49,6 +51,12 @@ class MiniBatchLoader(object):
         all_X_list = self.log_df['center']
         all_y_list = self.log_df['steering'].as_matrix()
 
+        all_X_list.append(self.log_df['left'])
+        all_X_list.append(self.log_df['right'])
+        all_y_list = np.concatenate([all_y_list,
+                                     self.log_df['steering'].as_matrix() + DELTA_ANGLE, 
+                                     self.log_df['steering'].as_matrix() - DELTA_ANGLE])
+
         self.datasize = len(all_X_list)
         self.datasize_train = int(self.datasize * split_ratio)
         self.datasize_test = self.datasize - self.datasize_train
@@ -60,13 +68,6 @@ class MiniBatchLoader(object):
         self.test_X_file_list = [self.load_csv_path(all_X_list[indices[i]]) for i in range(self.datasize_train, self.datasize)]
         self.test_y_list = np.array([all_y_list[indices[i]] for i in range(self.datasize_train, self.datasize)])
 
-
-    def augment(X, y):
-        flipped_X = np.array([cv2.flip(i, 1) for i in X])
-        flipped_y = -1.0 * y
-        aug_X = np.concatenate([X, flipped_X])
-        aug_y = np.concatenate([y, flipped_y])
-        return aug_X, aug_y
 
     def __iter__(self):   # iterator setting
         return self
@@ -96,8 +97,9 @@ class MiniBatchLoader(object):
 
                 self.current_index += self.batchsize
                 if self.current_index + self.batchsize > self.datasize_train:
-                    del self.current_index, self.random_index  # for try-catch
-                    raise StopIteration
+                    # del self.current_index, self.random_index  # for try-catch
+                    # raise StopIteration
+                    self.initialize_iterator()
                 return minibatch_X, minibatch_y
         else:
             try:
@@ -115,8 +117,9 @@ class MiniBatchLoader(object):
 
                 self.current_index += self.batchsize
                 if self.current_index + self.batchsize > self.datasize_test:
-                    del self.current_index, self.random_index  # for try-catch
-                    raise StopIteration
+                    # del self.current_index, self.random_index  # for try-catch
+                    # raise StopIteration
+                    self.initialize_iterator()
                 return minibatch_X, minibatch_y
 
     # apply for minibatch
@@ -223,8 +226,11 @@ def training(BatchLoader, model, epochs, modelname='model.h5'):
     BatchLoader.train = True
     BatchLoaderTest = copy.copy(BatchLoader)
     BatchLoaderTest.train = False
-    model.fit_generator(BatchLoader, BatchLoader.datasize_train / BatchLoader.batchsize, epochs=epochs, 
-                        validation_data=BatchLoaderTest, validation_steps=BatchLoader.datasize_test / BatchLoader.batchsize)
+    # model.fit_generator(BatchLoader, BatchLoader.datasize_train / BatchLoader.batchsize, epochs=epochs, 
+    #                     validation_data=BatchLoaderTest, validation_steps=BatchLoader.datasize_test / BatchLoader.batchsize)
+
+    model.fit_generator(BatchLoader, 20, epochs=epochs, 
+                        validation_data=BatchLoaderTest, validation_steps=10)
     model.save(modelname)
 
 
