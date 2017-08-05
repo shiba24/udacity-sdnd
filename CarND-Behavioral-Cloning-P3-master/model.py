@@ -21,7 +21,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.applications.vgg16 import VGG16
 
 DATA_DIR = '../data/behavioral-cloning-data'
-DELTA_ANGLE = 0.1
+DELTA_ANGLE = 0.05
 
 class MiniBatchLoader(object):
     def __init__(self, data_dir, batchsize, insize=(100, 200), train=True):
@@ -129,7 +129,7 @@ class MiniBatchLoader(object):
         return np.array([cv2.imread(x) for x in minibatch_path_X], dtype=np.uint8)
 
     def crop_under(self, minibatch_X):
-        return minibatch_X[:, 60:-20, :, :]
+        return minibatch_X[:, :, :, :]
 
     def process_batch(self, minibatch_X, minibatch_y):
         minibatch_X = self.crop_under(minibatch_X)
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     m = MiniBatchLoader(DATA_DIR, 32)
-    model = define_model((80, 320, 3), gpu=args.gpu)
+    model = define_model((160, 320, 3), gpu=args.gpu)
     training(m, model, epochs=args.epochs, iter_per_epoch=args.ipe, modelname='model.h5')
 
 

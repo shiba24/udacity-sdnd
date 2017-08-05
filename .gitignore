@@ -1,6 +1,7 @@
 *.zip
 .DS_STORE
 .*
+*.pyc
 !.gitignore
 
 

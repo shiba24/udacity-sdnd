@@ -60,10 +60,13 @@ def telemetry(sid, data):
         # The current image from the center camera of the car
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
+        # image_array = np.asarray(image)
+        # print np.asarray(image).shape
         image_array = np.asarray(image)
-        steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
+        steering_angle = float(model.predict((image_array[None, 45:-15, :, :] - 126) / 255., batch_size=1))
 
-        throttle = controller.update(float(speed))
+        # throttle = controller.update(float(speed))
+        throttle = 0.1
 
         print(steering_angle, throttle)
         send_control(steering_angle, throttle)
@@ -93,45 +96,55 @@ def send_control(steering_angle, throttle):
         },
         skip_sid=True)
 
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Remote Driving')
-    parser.add_argument(
-        'model',
-        type=str,
-        help='Path to model h5 file. Model should be on the same path.'
-    )
-    parser.add_argument(
-        'image_folder',
-        type=str,
-        nargs='?',
-        default='',
-        help='Path to image folder. This is where the images from the run will be saved.'
-    )
-    args = parser.parse_args()
-
-    # check that model Keras version is same as local Keras version
-    f = h5py.File(args.model, mode='r')
-    model_version = f.attrs.get('keras_version')
-    keras_version = str(keras_version).encode('utf8')
-
-    if model_version != keras_version:
-        print('You are using Keras version ', keras_version,
-              ', but the model was built using ', model_version)
-
-    model = load_model(args.model)
-
-    if args.image_folder != '':
-        print("Creating image folder at {}".format(args.image_folder))
-        if not os.path.exists(args.image_folder):
-            os.makedirs(args.image_folder)
+def make_img_dir(image_folder):
+    if  image_folder != '':
+        print("Creating image folder at {}".format(image_folder))
+        if not os.path.exists(image_folder):
+            os.makedirs(image_folder)
         else:
-            shutil.rmtree(args.image_folder)
-            os.makedirs(args.image_folder)
+            shutil.rmtree(image_folder)
+            os.makedirs(image_folder)
         print("RECORDING THIS RUN ...")
     else:
         print("NOT RECORDING THIS RUN ...")
 
+
+def check_keras_version(model_version):
+    # check that model Keras version is same as local Keras version
+    keras_version = str(keras_version).encode('utf8')
+    if model_version != keras_version:
+        print('You are using Keras version ', keras_version,
+              ', but the model was built using ', model_version)
+
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Remote Driving')
+    parser.add_argument('--model', type=str,
+        help='Path to model h5 file. Model should be on the same path.')
+    parser.add_argument('--model_json', type=str,
+        help='Path to model json file. Model should be on the same path.')
+    parser.add_argument('--image_folder', type=str, nargs='?', default='',
+        help='Path to image folder. This is where the images from the run will be saved.')
+    args = parser.parse_args()
+
+    if args.model_json:
+        import json
+        from keras.models import model_from_json
+        with open(args.model_json, 'r') as jfile:
+            json_model = jfile.read()
+            model = model_from_json(json_model)
+        # check_keras_version(json_model['version'])
+        model.compile("adam", "mse")
+        weights_file = args.model_json.replace('json', 'h5')
+        model.load_weights(weights_file)
+    elif args.model:
+        f = h5py.File(args.model, mode='r')
+        check_keras_version(f.attrs.get('keras_version'))
+        model = load_model(args.model)
+
+
+    make_img_dir(args.image_folder)
     # wrap Flask application with engineio's middleware
     app = socketio.Middleware(sio, app)
 
