@@ -37,7 +37,8 @@ I then explored different color spaces and different `skimage.hog()` parameters.
 
 #### 2. Explain how you settled on your final choice of HOG parameters.
 
-I tried various combinations of parameters and finally chose the parameters: using the `YCrCb` color space and HOG parameters of `orientations=9`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`, which can be seen in the eighth code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Vehicle-Detection-master/script.ipynb).
+I tried various combinations of parameters with grid search. The space of parameters I searched was `(6, 9, 12)` for `orientations`, `(6, 8, 10)` for `pixel_per_cell`, and `(1, 2)` for `cell_per_block`. The train and test data are same between the parameters. The results can be seen in the 12th code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Vehicle-Detection-master/script.ipynb)
+Then I finally chose the parameters due to the test accuracy of the SVM classifier: using the `YCrCb` color space and HOG parameters of `orientations=12`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`, which can be seen in the eighth code cell of the notebook.
 
 Here are feature images for car and notcar images above.
 
@@ -47,7 +48,7 @@ Here are feature images for car and notcar images above.
 
 #### 3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
 
-Then I trained a linear SVM in the tenth code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Vehicle-Detection-master/script.ipynb). The accuracy for test dataset (20% of the whole dataset) is `0.989`.
+Then I trained a linear SVM in the tenth code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Vehicle-Detection-master/script.ipynb) for the best parameters again. The accuracy for test dataset (20% of the whole dataset) is `0.990`.
 
 
 ### Sliding Window Search
