@@ -53,7 +53,6 @@ Before explaining the pipeline in detail, I show you the lane-detected image aft
 
 I have already described how I applied the distortion correction to one of the test images in [Camera Calibration section](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Advanced-Lane-Lines-master/writeup_report.md#camera-calibration).
 
-
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
 I used a combination of color and gradient thresholds to generate a binary image in the 3rd code cell of the [IPython notebook](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Advanced-Lane-Lines-master/script.ipynb).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
