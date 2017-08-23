@@ -1,5 +1,7 @@
 # Behaviorial Cloning Project
 
+Please go to see [writeup report](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Behavioral-Cloning-P3-master/writeup_report.md)!
+
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 Overview

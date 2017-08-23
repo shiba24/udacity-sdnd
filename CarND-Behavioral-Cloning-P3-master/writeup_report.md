@@ -10,7 +10,7 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
+[image1]: ./images/vgg16.png "VGG16"
 [image2]: ./examples/placeholder.png "Grayscaling"
 [image3]: ./examples/placeholder_small.png "Recovery Image"
 [image4]: ./examples/placeholder_small.png "Recovery Image"
@@ -21,60 +21,89 @@ The goals / steps of this project are the following:
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
-```
-Train on 17276 samples, validate on 4320 samples
-```
-
 ---
 ### Files Submitted & Code Quality
 
 #### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
-* model.py containing the script to create and train the model
+* model.py containing the script to feed dataset and to create/train the model
 * drive.py for driving the car in autonomous mode
 * model.h5 containing a trained convolution neural network 
 * writeup_report.md summarizing the results
 
 #### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
+
 ```sh
 python drive.py model.h5
 ```
 
 #### 3. Submission code is usable and readable
 
-The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
+The model.py file contains the code for 1. feeding data and 2. training the convolution neural network. Feeding data is done in the`MiniBatchLoader` class in the line 26 at the [model.py](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Behavioral-Cloning-P3-master/model.py). The model definition is in the line 190 at the [model.py](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Behavioral-Cloning-P3-master/model.py), and the training script is in the line 242 at the [model.py](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Behavioral-Cloning-P3-master/model.py).
+The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
+
 
 ### Model Architecture and Training Strategy
 
 #### 1. An appropriate model architecture has been employed
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
+My model is the modification of VGG16 model that is pre-trained with [IMAGENET](http://www.image-net.org/). Loading the pretrained model is implemented at the line 218 at the [model.py](https://github.com/shiba24/udacity-sdnd/blob/master/CarND-Behavioral-Cloning-P3-master/model.py).
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+The brief description of the VGG16 network is as following image. (Cited from [this web page](https://www.cs.toronto.edu/~frossard/post/vgg16/))
+
+![alt text][image1]
+
+Then, I chenged the weights and structure of the top layer at the VGG16 network. The structure of the whole network is shown in the next table.
+
+| Layer                 |     Description                               | 
+|:---------------------:|:---------------------------------------------:| 
+| Input                 | 60x200x3 RGB image                            | 
+| VGG16                 | the top layer is not included                 |
+| Fully connected       | In: 3072, Out: 512                            |
+| ELU                   |                                               |
+| BatchNormalization    |                                               |
+| Dropout               | KEEP_PROB = 0.5                               |
+| Fully connected       | In: 512, Out: 256                             |
+| ELU                   |                                               |
+| BatchNormalization    |                                               |
+| Dropout               | KEEP_PROB = 0.5                               |
+| Fully connected       | In: 256, Out: 64                              |
+| RELU                  |                                               |
+| Dropout               | KEEP_PROB = 0.5                               |
+| Fully connected       | In: 64, Out: 1                                |
+
+
+The data preprocessing including data normalization is done in the `MiniBatchLoader` class.
+
 
 #### 2. Attempts to reduce overfitting in the model
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+The model contains dropout layers in order to reduce overfitting (model.py lines 224).
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 55 in model.py), which is confirmed by the `MiniBatchLoader` class. The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 237).
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road, and the reverse run of the road.
 
 For details about how I created the training data, see the next section. 
 
-###Model Architecture and Training Strategy
+```
+Train on 17276 samples, validate on 4320 samples
+```
 
-####1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
+### Model Architecture and Training Strategy
+
+#### 1. Solution Design Approach
+
+The overall strategy for deriving a model architecture was to use pre-trained model, and fine-tuning on the augumented dataset. 
 
 My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
 
@@ -90,11 +119,74 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 ####2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+The final model architecture (model.py lines 18-24) is the combination of VGG16 model (pre-trained part) and full connected model (fine-tuned part), as described in the previous section.
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+Here is a summary of the architecture.
 
-![alt text][image1]
+```
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+input_1 (InputLayer)         (None, 60, 200, 3)        0
+_________________________________________________________________
+block1_conv1 (Conv2D)        (None, 60, 200, 64)       1792
+_________________________________________________________________
+block1_conv2 (Conv2D)        (None, 60, 200, 64)       36928
+_________________________________________________________________
+block1_pool (MaxPooling2D)   (None, 30, 100, 64)       0
+_________________________________________________________________
+block2_conv1 (Conv2D)        (None, 30, 100, 128)      73856
+_________________________________________________________________
+block2_conv2 (Conv2D)        (None, 30, 100, 128)      147584
+_________________________________________________________________
+block2_pool (MaxPooling2D)   (None, 15, 50, 128)       0
+_________________________________________________________________
+block3_conv1 (Conv2D)        (None, 15, 50, 256)       295168
+_________________________________________________________________
+block3_conv2 (Conv2D)        (None, 15, 50, 256)       590080
+_________________________________________________________________
+block3_conv3 (Conv2D)        (None, 15, 50, 256)       590080
+_________________________________________________________________
+block3_pool (MaxPooling2D)   (None, 7, 25, 256)        0
+_________________________________________________________________
+block4_conv1 (Conv2D)        (None, 7, 25, 512)        1180160
+_________________________________________________________________
+block4_conv2 (Conv2D)        (None, 7, 25, 512)        2359808
+_________________________________________________________________
+block4_conv3 (Conv2D)        (None, 7, 25, 512)        2359808
+_________________________________________________________________
+block4_pool (MaxPooling2D)   (None, 3, 12, 512)        0
+_________________________________________________________________
+block5_conv1 (Conv2D)        (None, 3, 12, 512)        2359808
+_________________________________________________________________
+block5_conv2 (Conv2D)        (None, 3, 12, 512)        2359808
+_________________________________________________________________
+block5_conv3 (Conv2D)        (None, 3, 12, 512)        2359808
+_________________________________________________________________
+block5_pool (MaxPooling2D)   (None, 1, 6, 512)         0
+_________________________________________________________________
+globalaveragepooling2d_1 (Gl (None, 512)               0
+_________________________________________________________________
+dense_1 (Dense)              (None, 512)               262656
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 512)               0
+_________________________________________________________________
+dense_2 (Dense)              (None, 256)               131328
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 256)               0
+_________________________________________________________________
+dense_3 (Dense)              (None, 64)                16448
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 64)                0
+_________________________________________________________________
+dense_4 (Dense)              (None, 1)                 65
+=================================================================
+Total params: 15,125,185
+Trainable params: 13,389,697
+Non-trainable params: 1,735,488
+_________________________________________________________________
+```
+
 
 ####3. Creation of the Training Set & Training Process
 

@@ -24,6 +24,10 @@ DATA_DIR = '../data/behavioral-cloning-data'
 DELTA_ANGLE = 0.05
 
 class MiniBatchLoader(object):
+    """
+    Data feeder.
+    Itarator that feeds minibatch of the (X, y)
+    """
     def __init__(self, data_dir, batchsize, insize=(100, 200), train=True):
         self.data_dir = data_dir
         self.batchsize = batchsize
@@ -49,6 +53,9 @@ class MiniBatchLoader(object):
             return os.path.join(DATA_DIR, img_path)
 
     def split_train_test(self, split_ratio=.9):
+        """
+        Split training and test dataset.
+        """
         self.load_csv()
         all_X_list = self.log_df['center']
         all_y_list = self.log_df['steering'].as_matrix()
@@ -82,8 +89,8 @@ class MiniBatchLoader(object):
         else:
             self.random_index = np.random.permutation(self.datasize_test)
 
-    def next(self):       # for each loop
-        if self.train:
+    def next(self):       # for each iteration
+        if self.train:      # when training
             try:
                 _ = self.current_index + 1
             except AttributeError:
@@ -103,7 +110,7 @@ class MiniBatchLoader(object):
                     # raise StopIteration
                     self.initialize_iterator()
                 return minibatch_X, minibatch_y
-        else:
+        else:               # when testing
             try:
                 _ = self.current_index + 1
             except AttributeError:
@@ -132,9 +139,13 @@ class MiniBatchLoader(object):
         return minibatch_X[:, :, :, :]
 
     def process_batch(self, minibatch_X, minibatch_y):
+        """
+        Preprocessing the minibatch.
+        Cropping, change hue at random, flip right to left at random
+        """
         minibatch_X = self.crop_under(minibatch_X)
         if self.train:
-            delta_hue = np.random.uniform(-18, 18, (minibatch_X.shape[0])).astype(np.int8)            # in opencv, hue is [0, 179]
+            delta_hue = np.random.uniform(-18, 18, (minibatch_X.shape[0])).astype(np.int8)          # in opencv, hue is [0, 179]
             processed_X = np.array([self.change_hue(minibatch_X[i, :, :, :], delta_hue[i]) for i in range(len(minibatch_X))])
             processed_X, processed_y = self.fliplr(processed_X, minibatch_y)
             # processed_y = np.random.normal(0., 0.01, size=(len(minibatch_y, )))
@@ -163,6 +174,9 @@ class MiniBatchLoader(object):
         return flipped_X, flipped_y
 
     def standardize(self, images, mean_image="mean.jpg"):
+        """
+        Standardizing images.
+        """
         if not os.path.exists(mean_image):
             self.calc_mean()
         # mean = cv2.imread(mean_image)
@@ -171,7 +185,6 @@ class MiniBatchLoader(object):
 
     def calc_mean(self):
         pass
-
 
 
 def define_model(input_shape, modelname='model.h5', gpu=-1):
@@ -211,11 +224,11 @@ def define_model(input_shape, modelname='model.h5', gpu=-1):
         fc_model.add(Dropout(0.5))
         # fc_model.add(Dense(128, activation=keras.layers.advanced_activations.ELU(alpha=1.0),
         #                    kernel_initializer='he_normal'))
-        fc_model.add(Dense(128, kernel_initializer='he_normal'))
+        fc_model.add(Dense(256, kernel_initializer='he_normal'))
         fc_model.add(keras.layers.advanced_activations.ELU(alpha=1.0))
         fc_model.add(BatchNormalization())
         fc_model.add(Dropout(0.5))
-        fc_model.add(Dense(32, activation='relu', kernel_initializer='he_normal'))
+        fc_model.add(Dense(64, activation='relu', kernel_initializer='he_normal'))
         fc_model.add(Dropout(0.5))
         fc_model.add(Dense(1, name='output', kernel_initializer='he_normal'))
         
@@ -230,19 +243,8 @@ def training(BatchLoader, model, epochs, iter_per_epoch=None, modelname='model.h
     BatchLoader.train = True
     BatchLoaderTest = copy.copy(BatchLoader)
     BatchLoaderTest.train = False
-    # if iter_per_epoch is None:
-    #     ipe_train = BatchLoader.datasize_train / BatchLoader.batchsize
-    #     ipe_test = BatchLoader.datasize_test / BatchLoader.batchsize
-    # else:
-    #     ipe_train = iter_per_epoch
-    #     ipe_test = iter_per_epoch
-    # model.fit_generator(BatchLoader, steps_per_epoch=ipe_train, epochs=epochs, 
-    #                     validation_data=BatchLoaderTest, validation_steps=ipe_test)
-
-
     ckpt = ModelCheckpoint('weights.{epoch:02d}-{val_loss:.2f}.hdf5', monitor='val_loss', period=1)
     csv_logger = CSVLogger('training.log')
-
     model.fit_generator(BatchLoader, steps_per_epoch=BatchLoader.datasize_train / BatchLoader.batchsize,
                         epochs=epochs, callbacks=[ckpt, csv_logger],
                         validation_data=BatchLoaderTest, validation_steps=BatchLoader.datasize_test / BatchLoader.batchsize)
@@ -285,6 +287,15 @@ plt.xlabel('epoch')
 plt.legend(['training set', 'validation set'], loc='upper right')
 plt.show()
 
+
+    # if iter_per_epoch is None:
+    #     ipe_train = BatchLoader.datasize_train / BatchLoader.batchsize
+    #     ipe_test = BatchLoader.datasize_test / BatchLoader.batchsize
+    # else:
+    #     ipe_train = iter_per_epoch
+    #     ipe_test = iter_per_epoch
+    # model.fit_generator(BatchLoader, steps_per_epoch=ipe_train, epochs=epochs, 
+    #                     validation_data=BatchLoaderTest, validation_steps=ipe_test)
 
 
 """

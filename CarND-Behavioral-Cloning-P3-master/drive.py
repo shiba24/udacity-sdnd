@@ -3,6 +3,7 @@ import base64
 from datetime import datetime
 import os
 import shutil
+import cv2
 
 import numpy as np
 import socketio
@@ -22,54 +23,24 @@ model = None
 prev_image_array = None
 
 
-class SimplePIController:
-    def __init__(self, Kp, Ki):
-        self.Kp = Kp
-        self.Ki = Ki
-        self.set_point = 0.
-        self.error = 0.
-        self.integral = 0.
-
-    def set_desired(self, desired):
-        self.set_point = desired
-
-    def update(self, measurement):
-        # proportional error
-        self.error = self.set_point - measurement
-
-        # integral error
-        self.integral += self.error
-
-        return self.Kp * self.error + self.Ki * self.integral
-
-
-controller = SimplePIController(0.1, 0.002)
-set_speed = 9
-controller.set_desired(set_speed)
-
-
 @sio.on('telemetry')
 def telemetry(sid, data):
     if data:
-        # The current steering angle of the car
-        steering_angle = data["steering_angle"]
-        # The current throttle of the car
-        throttle = data["throttle"]
-        # The current speed of the car
-        speed = data["speed"]
-        # The current image from the center camera of the car
-        imgString = data["image"]
+        steering_angle = data["steering_angle"]         # The current steering angle of the car
+        throttle = data["throttle"]                     # The current throttle of the car
+        speed = data["speed"]                           # The current speed of the car
+        imgString = data["image"]                       # The current image from the center camera of the car
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         # image_array = np.asarray(image)
-        # print np.asarray(image).shape
         image_array = np.asarray(image)
-        steering_angle = float(model.predict((image_array[None, 45:-15, :, :] - 126) / 255., batch_size=1))
+        img = cv2.resize(image_array, (200, 100)).astype('float')
+        steering_angle = float(model.predict((img[None, 40:, :, :] - 126) / 255., batch_size=1))
+        # steering_angle = float(model.predict((image_array[None, 45:-15, :, :] - 126) / 255., batch_size=1))
 
         # throttle = controller.update(float(speed))
-        throttle = 0.1
-
+        # throttle = 0.06
         print(steering_angle, throttle)
-        send_control(steering_angle, throttle)
+        send_control(steering_angle, 0.125 if abs(steering_angle) < 0.07 else 0.05 if abs(steering_angle) < 0.3 else -0.1)
 
         # save frame
         if args.image_folder != '':
@@ -117,7 +88,6 @@ def check_keras_version(model_version):
               ', but the model was built using ', model_version)
 
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Remote Driving')
     parser.add_argument('--model', type=str,
@@ -150,3 +120,31 @@ if __name__ == '__main__':
 
     # deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
+
+
+"""
+class SimplePIController:
+    def __init__(self, Kp, Ki):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.set_point = 0.
+        self.error = 0.
+        self.integral = 0.
+
+    def set_desired(self, desired):
+        self.set_point = desired
+
+    def update(self, measurement):
+        # proportional error
+        self.error = self.set_point - measurement
+
+        # integral error
+        self.integral += self.error
+
+        return self.Kp * self.error + self.Ki * self.integral
+
+controller = SimplePIController(0.1, 0.002)
+set_speed = 9
+controller.set_desired(set_speed)
+
+"""
