@@ -14,8 +14,8 @@ The goals / steps of this project are the following:
 [image2]: ./examples/placeholder.png "Grayscaling"
 [image3]: ./examples/placeholder_small.png "Recovery Image"
 [image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
+[image5]: ./images/test4.png "Original Image"
+[image6]: ./images/test4_hue.png "Hue-changes Image"
 [image7]: ./examples/placeholder_small.png "Flipped Image"
 
 ## Rubric Points
@@ -90,30 +90,16 @@ The model used an adam optimizer, so the learning rate was not tuned manually (m
 
 #### 4. Appropriate training data
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road, and the reverse run of the road.
-
-For details about how I created the training data, see the next section. 
-
-```
-Train on 17276 samples, validate on 4320 samples
-```
+Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road, and the reverse run of the road. As data augumentation process, I implemented fliplr, changing hue processes. For details about how I created and augumented the training data, see the next section. 
 
 
 ### Model Architecture and Training Strategy
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to use pre-trained model, and fine-tuning on the augumented dataset. 
+The overall strategy for deriving a model architecture was to use pre-trained model, and fine-tuning on the augumented dataset. This idea is from the fact that input is image, which means the model trained on other images already would share some parameters like wights and biases. VGG16 network achieves 92.7% top-5 test accuracy in ImageNet, which is a dataset of over 14 million images belonging to 1000 classes. Then I changed the weights and biases of the top-layer of VGG16 network, and add several full-connected layers in order to fine-tune the model.
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
-
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
-
-To combat the overfitting, I modified the model so that ...
-
-Then I ... 
-
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+To combat the overfitting, I augumented the dataset randomly and dynamically. This is possible by using `iterator` to feed minibatch to the model. The augument method I used were flipping images and changing hue.
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
@@ -188,30 +174,57 @@ _________________________________________________________________
 ```
 
 
-####3. Creation of the Training Set & Training Process
+#### 3. Creation of the Training Set & Training Process
 
 To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
 
 ![alt text][image2]
 
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
+I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn how to get back from the side to the center position. Here are left-side and right-side images:
 
 ![alt text][image3]
 ![alt text][image4]
+
+In addition, I recorded two laps of the track for reverse run of the road, because the original track is counterclockwise rotation and that would result in the left-shifted prediction of the neural network, which is not expected.
+
+Before training, I  randomly shuffled the data set and splitted the dataset into training (90%) and validation (10%). Finally, the number of the original dataset (not augumented yet) was as follows.
+
+```
+Train on 17276 samples, validate on 4320 samples
+```
+
+To augment the data sat, I did 1. changing hues of the images randomly, 2. flipping images and angles.
+
+Changing hues (line 159 in model.py) purely augument the dataset, because I noticed there were several hue environment while drinving the road. Here are the code and examples of original image and hue-changed image.
+
+```
+    def change_hue(self, img, delta_hue):
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV).astype(np.int16)
+        hsv[:, :, 0] += delta_hue
+        hued_img = cv2.cvtColor(np.clip(hsv, 0, 255).astype(np.uint8), cv2.COLOR_HSV2BGR)
+        return hued_img
+```
+
 ![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
 ![alt text][image6]
-![alt text][image7]
 
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+Flipping images would augument the dataset, and also the distribution of the steering angle would be less unbalanced to counterclockwise, which is because the track is counterclockwise rotation. Here are the code and an image that has then been flipped:
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
+```
+    def fliplr(self, minibatch_X, minibatch_y):
+        def flip(img, flag):
+            if flag == -1:
+                return cv2.flip(img, 1)
+            else:
+                return img
+        flipflag = np.random.choice((-1, 1), size=(len(minibatch_X), ))   # -1... flip  /  1...not flip
+        flipped_X = np.array([flip(minibatch_X[i], flipflag[i]) for i in range(0, len(minibatch_X))])
+        flipped_y = flipflag * minibatch_y
+        return flipped_X, flipped_y
+```
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+
+The `MiniBatchLoader` class, which is iterator, dynamically and randomly applys these augumentation processing randomly (line 92 in model.py). To use the `MiniBatchLoader` iterator, I used `model.fit_generator()` method of keras. The images are standardized (line 176) and reshaped, cropped the bottom part (line 138). The input image shape was (60, 200).
+
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 30 as evidenced by error rate . I used an adam optimizer so that manually training the learning rate wasn't necessary.

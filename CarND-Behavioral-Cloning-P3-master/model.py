@@ -136,7 +136,7 @@ class MiniBatchLoader(object):
         return np.array([cv2.imread(x) for x in minibatch_path_X], dtype=np.uint8)
 
     def crop_under(self, minibatch_X):
-        return minibatch_X[:, :, :, :]
+        return [cv2.resize(img, (200, 100)).astype('float')[40:, :, :] for img in minibatch_X]
 
     def process_batch(self, minibatch_X, minibatch_y):
         """
