@@ -15,3 +15,4 @@ data/*
 
 CarND-Behavioral-Cloning-P3-master/run*/*
 *.h5
+!CarND-Behavioral-Cloning-P3-master/model.h5
