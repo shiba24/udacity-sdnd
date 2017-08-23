@@ -227,11 +227,27 @@ Flipping images would augument the dataset, and also the distribution of the ste
 
 The `MiniBatchLoader` class, which is iterator, dynamically and randomly applys these augumentation processing randomly (line 92 in model.py). To use the `MiniBatchLoader` iterator, I used `model.fit_generator()` method of keras. The images are standardized (line 176) and reshaped, cropped the bottom part (line 138). The input image shape was (60, 200).
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 30 as evidenced by mean-squared error 0.0165. I used an adam optimizer so that manually training the learning rate wasn't necessary.
+
+```
+    def standardize(self, images, mean_image="mean.jpg"):
+        """
+        Standardizing images.
+        """
+        if not os.path.exists(mean_image):
+            self.calc_mean()
+        subtracted_img = images - 126
+        return subtracted_img / 255.
+
+    def crop_under(self, minibatch_X):
+        return [cv2.resize(img, (200, 100)).astype('float')[40:, :, :] for img in minibatch_X]
+
+```
+
+I used this training data for training the model. The training was done on the AWS GPU instance. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was 30 as evidenced by mean-squared error 0.0165. I used an adam optimizer so that manually training the learning rate wasn't necessary.
 
 ```
 Epoch 30/30
 596/596 [==============================] - 1288s - loss: 0.0168 - val_loss: 0.0165
 ```
 
-The final model is model.h5 and the video is video.pmp4 in this repository.
+The final model is model.h5 and the video is video.mp4 in this repository.
