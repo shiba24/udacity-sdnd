@@ -11,12 +11,12 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 
 [image1]: ./images/vgg16.png "VGG16"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
+[image2]: ./images/centerdriving.png "Driving"
+[image3]: ./images/rightside.png "Recovery Image"
+[image4]: ./images/leftside.png "Recovery Image"
 [image5]: ./images/test4.png "Original Image"
 [image6]: ./images/test4_hue.png "Hue-changes Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -103,7 +103,7 @@ To combat the overfitting, I augumented the dataset randomly and dynamically. Th
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
-####2. Final Model Architecture
+#### 2. Final Model Architecture
 
 The final model architecture (model.py lines 18-24) is the combination of VGG16 model (pre-trained part) and full connected model (fine-tuned part), as described in the previous section.
 
