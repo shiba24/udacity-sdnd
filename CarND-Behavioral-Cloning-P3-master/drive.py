@@ -33,6 +33,7 @@ def telemetry(sid, data):
         image = Image.open(BytesIO(base64.b64decode(imgString)))
         # image_array = np.asarray(image)
         image_array = np.asarray(image)
+        image_array = image_array[:, :, ::-1]           # converts image from RGB to BGR
         img = cv2.resize(image_array, (200, 100)).astype('float')
         steering_angle = float(model.predict((img[None, 40:, :, :] - 126) / 255., batch_size=1))
         # steering_angle = float(model.predict((image_array[None, 45:-15, :, :] - 126) / 255., batch_size=1))
@@ -40,7 +41,7 @@ def telemetry(sid, data):
         # throttle = controller.update(float(speed))
         # throttle = 0.06
         print(steering_angle, throttle)
-        send_control(steering_angle, 0.125 if abs(steering_angle) < 0.07 else 0.05 if abs(steering_angle) < 0.3 else -0.1)
+        send_control(steering_angle, 0.2 if abs(steering_angle) < 0.07 else 0.05 if abs(steering_angle) < 0.3 else -0.1)
 
         # save frame
         if args.image_folder != '':
@@ -82,6 +83,7 @@ def make_img_dir(image_folder):
 
 def check_keras_version(model_version):
     # check that model Keras version is same as local Keras version
+    from keras import __version__ as keras_version
     keras_version = str(keras_version).encode('utf8')
     if model_version != keras_version:
         print('You are using Keras version ', keras_version,
